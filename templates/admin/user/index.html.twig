@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Gestion des utilisateurs</h1>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Email</th>
+        <th>Nom</th>
+        <th>Rôles</th>
+        <th>Statut</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for user in users %}
+    <tr>
+        <td>{{ user.email }}</td>
+        <td>{{ user.firstname}} {{ user.lastname }}</td>
+        <td>{{ user.roles|join(', ') }}</td>
+        <td>
+            {% if user.isSuspended %}
+                <span style="color:red;">Suspendu</span>
+            {% else %}
+                Actif
+            {% endif %}
+        </td>
+        <td>
+            <a href="{{ path('admin_user_edit', {id: user.id}) }}">Modifier</a> |
+            <a href="{{ path('admin_user_toggle_suspend', {id: user.id}) }}">
+                {% if user.isSuspended %}Réactiver{% else %}Suspendre{% endif %}
+            </a> |
+            <form action="{{ path('admin_user_delete', {id: user.id}) }}" method="post" style="display:inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
+                <button type="submit">Supprimer</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

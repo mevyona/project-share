@@ -48,6 +48,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $code_postal = null;
 
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $isSuspended = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -174,6 +177,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCodePostal(int $code_postal): static
     {
         $this->code_postal = $code_postal;
+
+        return $this;
+    }
+
+    public function isSuspended(): ?bool
+    {
+        return $this->isSuspended;
+    }
+
+    public function setIsSuspended(bool $isSuspended): static
+    {
+        $this->isSuspended = $isSuspended;
 
         return $this;
     }
