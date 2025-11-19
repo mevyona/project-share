@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserLog;
 use App\Form\RegistrationFormType;
 use App\Security\AppCustomAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,6 +30,15 @@ class RegistrationController extends AbstractController
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
             $entityManager->persist($user);
+            $entityManager->flush();
+
+            // Log the registration
+            $log = new UserLog();
+            $log->setUser($user);
+            $log->setAction('registration');
+            $log->setIpAddress($request->getClientIp());
+
+            $entityManager->persist($log);
             $entityManager->flush();
 
             // do anything else you need here, like send an email

@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\AdminUserType;
+use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +20,24 @@ class AdminUserController extends AbstractController
     public function index(UserRepository $repo): Response
     {
         return $this->render('admin/user/index.html.twig', [
-            'users' => $repo->findAll()
+            'users' => $repo->findAll(),
+        ]);
+    }
+
+    #[Route('/history', name: 'admin_user_history')]
+    public function history(UserLogRepository $logRepo): Response
+    {
+        return $this->render('admin/user/history.html.twig', [
+            'logs' => $logRepo->findRecentLogs(100),
+        ]);
+    }
+
+    #[Route('/{id}/history', name: 'admin_user_single_history')]
+    public function singleHistory(User $user, UserLogRepository $logRepo): Response
+    {
+        return $this->render('admin/user/single_history.html.twig', [
+            'user' => $user,
+            'logs' => $logRepo->findByUser($user),
         ]);
     }
 
@@ -37,14 +54,14 @@ class AdminUserController extends AbstractController
 
         return $this->render('admin/user/edit.html.twig', [
             'form' => $form,
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
     #[Route('/{id}/toggle-suspend', name: 'admin_user_toggle_suspend')]
     public function toggleSuspend(User $user, EntityManagerInterface $em): Response
     {
-        $user->setIsSuspended(!$user->isSuspended());
+        $user->setIsSuspended(! $user->isSuspended());
         $em->flush();
 
         return $this->redirectToRoute('admin_user_index');
@@ -53,7 +70,7 @@ class AdminUserController extends AbstractController
     #[Route('/{id}/delete', name: 'admin_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('delete_user_'.$user->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete_user_' . $user->getId(), $request->request->get('_token'))) {
             $em->remove($user);
             $em->flush();
         }
