@@ -17,6 +17,9 @@ security:
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\AppCustomAuthenticator
+            login_throttling:
+                max_attempts: 3
+                interval: '30 seconds'
             logout:
                 path: app_logout
             user_checker: App\Security\UserChecker

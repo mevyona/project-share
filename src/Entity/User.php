@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -50,6 +52,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(options: ['default' => false])]
     private ?bool $isSuspended = false;
+
+    /**
+     * @var Collection<int, PasswordHistory>
+     */
+    #[ORM\OneToMany(targetEntity: PasswordHistory::class, mappedBy: 'user')]
+    private Collection $passwordHistories;
+
+    public function __construct()
+    {
+        $this->passwordHistories = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -189,6 +202,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsSuspended(bool $isSuspended): static
     {
         $this->isSuspended = $isSuspended;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PasswordHistory>
+     */
+    public function getPasswordHistories(): Collection
+    {
+        return $this->passwordHistories;
+    }
+
+    public function addPasswordHistory(PasswordHistory $passwordHistory): static
+    {
+        if (!$this->passwordHistories->contains($passwordHistory)) {
+            $this->passwordHistories->add($passwordHistory);
+            $passwordHistory->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePasswordHistory(PasswordHistory $passwordHistory): static
+    {
+        if ($this->passwordHistories->removeElement($passwordHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($passwordHistory->getUser() === $this) {
+                $passwordHistory->setUser(null);
+            }
+        }
 
         return $this;
     }

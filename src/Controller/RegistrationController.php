@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\PasswordHistory;
 use App\Entity\User;
-use App\Entity\UserLog;
 use App\Form\RegistrationFormType;
 use App\Security\AppCustomAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,25 +23,24 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
+
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            // encode
+            $hashedPassword = $userPasswordHasher->hashPassword($user, $plainPassword);
+            $user->setPassword($hashedPassword);
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Log the registration
-            $log = new UserLog();
-            $log->setUser($user);
-            $log->setAction('registration');
-            $log->setIpAddress($request->getClientIp());
+            // Sauvegarde dans password_history
+            $history = new PasswordHistory();
+            $history->setUser($user);
+            $history->setPassword($hashedPassword);
+            $history->setChangedAt(new \DateTimeImmutable());
+            $entityManager->persist($history);
 
-            $entityManager->persist($log);
             $entityManager->flush();
-
-            // do anything else you need here, like send an email
 
             return $security->login($user, AppCustomAuthenticator::class, 'main');
         }
