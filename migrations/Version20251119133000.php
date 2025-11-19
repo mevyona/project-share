@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20251119125948 extends AbstractMigration
+final class Version20251119133000 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,12 @@ final class Version20251119125948 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user CHANGE is_suspended is_suspended TINYINT(1) DEFAULT 0 NOT NULL');
+        $this->addSql('ALTER TABLE user ADD is_suspended TINYINT(1) DEFAULT 0 NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user CHANGE is_suspended is_suspended TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE user DROP is_suspended');
     }
 }
