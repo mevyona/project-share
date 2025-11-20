@@ -14,4 +14,11 @@ final class BaseController extends AbstractController
         return $this->render('base/index.html.twig', [
         ]);
     }
+
+    #[Route('/contact', name: 'app_contact')]
+    public function contact(): Response
+    {
+        return $this->render('base/contact.html.twig', [
+        ]);
+    }
 }

@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+	{{parent()}}Contact
+{% endblock %}
+{% block stylesheets %}
+	{{parent()}}
+	{{ encore_entry_link_tags('contact') }}
+{% endblock %}
+{% block body %}
+	<h1>Page de contact</h1>
+{% endblock %}
+{% block javascripts %}
+	{{parent()}}
+	{{ encore_entry_script_tags('contact') }}
+{% endblock %}
