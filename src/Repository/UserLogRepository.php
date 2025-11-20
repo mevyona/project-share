@@ -16,9 +16,6 @@ class UserLogRepository extends ServiceEntityRepository
         parent::__construct($registry, UserLog::class);
     }
 
-    /**
-     * Get recent logs ordered by date (most recent first)
-     */
     public function findRecentLogs(int $limit = 100): array
     {
         return $this->createQueryBuilder('ul')
@@ -28,9 +25,6 @@ class UserLogRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Get logs for a specific user
-     */
     public function findByUser(User $user): array
     {
         return $this->createQueryBuilder('ul')
