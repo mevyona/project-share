@@ -53,32 +53,13 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('app_change_password');
             }
             $violations = $validator->validate($newPassword, [
-                new NotBlank([
-                    "message" => "Le mot de passe ne peut pas être vide."
-                ]),
-                new Length([
-                    "min" => 12,
-                    "minMessage" => "Le mot de passe doit contenir au moins {{ limit }} caractères.",
-                ]),
-                new Regex([
-                    "pattern" => "/[A-Z]/",
-                    "message" => "Le mot de passe doit contenir au moins une lettre majuscule.",
-                ]),
-                new Regex([
-                    "pattern" => "/[a-z]/",
-                    "message" => "Le mot de passe doit contenir au moins une lettre minuscule.",
-                ]),
-                new Regex([
-                    "pattern" => "/[0-9]/",
-                    "message" => "Le mot de passe doit contenir au moins un chiffre.",
-                ]),
-                new Regex([
-                    "pattern" => "/[\W]/",
-                    "message" => "Le mot de passe doit contenir au moins un caractère spécial.",
-                ]),
-                new NotCompromisedPassword([
-                    "message" => "Ce mot de passe a été compromis dans une fuite de données."
-                ])
+                new NotBlank(["message" => "Le mot de passe ne peut pas être vide.",]),
+                new Length(["min" => 12, "minMessage" => "Le mot de passe doit contenir au moins {{ limit }} caractères.",]),
+                new Regex(["pattern" => "/[A-Z]/", "message" => "Le mot de passe doit contenir au moins une lettre majuscule.",]),
+                new Regex(["pattern" => "/[a-z]/", "message" => "Le mot de passe doit contenir au moins une lettre minuscule.",]),
+                new Regex(["pattern" => "/[0-9]/", "message" => "Le mot de passe doit contenir au moins un chiffre.",]),
+                new Regex(["pattern" => "/[\W]/", "message" => "Le mot de passe doit contenir au moins un caractère spécial.",]),
+                new NotCompromisedPassword(["message" => "Ce mot de passe a été compromis dans une fuite de données."])
             ]);
     
             if (count($violations) > 0) {
@@ -99,7 +80,7 @@ class SecurityController extends AbstractController
             if ($hasher->isPasswordValid($user, $newPassword)) {
                 $this->addFlash('error', 'Ce mot de passe est déjà votre mot de passe actuel.');
                 return $this->redirectToRoute('app_change_password');
-            }
+            } //tu me fais chier
             $history = new \App\Entity\PasswordHistory();
             $history->setUser($user);
             $history->setPassword($user->getPassword());
