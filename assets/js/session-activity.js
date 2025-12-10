@@ -83,15 +83,7 @@ class SessionActivityChecker {
                 </div>
                 <div class="inactivity-modal-body">
                     <p>Vous serez déconnecté dans <strong id="remainingTime">${remainingTime}</strong> secondes en raison d'inactivité.</p>
-                    <p>Cliquez sur "Rester connecté" pour continuer votre session.</p>
-                </div>
-                <div class="inactivity-modal-footer">
-                    <button type="button" class="btn btn-primary" id="stayConnectedBtn">
-                        Rester connecté
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="logoutNowBtn">
-                        Se déconnecter
-                    </button>
+                    <p>Déplacez votre curseur pour annuler la déconnexion automatique.</p>
                 </div>
             </div>
         `;

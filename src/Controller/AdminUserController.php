@@ -25,11 +25,95 @@ class AdminUserController extends AbstractController
         ]);
     }
 
-    #[Route('/history', name: 'admin_user_history')]
-    public function history(UserLogRepository $logRepo): Response
+    #[Route('/audit', name: 'admin_user_audit')]
+    public function audit(Request $request, UserLogRepository $logRepo): Response
     {
-        return $this->render('admin/user/history.html.twig', [
-            'logs' => $logRepo->findRecentLogs(100),
+        $action   = $request->query->get('action', '');
+        $userId   = $request->query->get('user_id', '');
+        $dateFrom = $request->query->get('date_from', '');
+        $dateTo   = $request->query->get('date_to', '');
+        $limit    = $request->query->getInt('limit', 100);
+
+        $qb = $logRepo->createQueryBuilder('ul')
+            ->leftJoin('ul.user', 'u')
+            ->addSelect('u')
+            ->andWhere('ul.action IN (:adminActions)')
+            ->setParameter('adminActions', ['user_update', 'user_suspend', 'user_unsuspend', 'user_delete'])
+            ->orderBy('ul.createdAt', 'DESC');
+
+        if ($action) {
+            $qb->andWhere('ul.action = :action')
+                ->setParameter('action', $action);
+        }
+
+        if ($userId) {
+            $qb->andWhere('ul.user = :userId')
+                ->setParameter('userId', $userId);
+        }
+
+        if ($dateFrom) {
+            $qb->andWhere('ul.createdAt >= :dateFrom')
+                ->setParameter('dateFrom', new \DateTime($dateFrom));
+        }
+
+        if ($dateTo) {
+            $dateTo = new \DateTime($dateTo);
+            $dateTo->setTime(23, 59, 59);
+            $qb->andWhere('ul.createdAt <= :dateTo')
+                ->setParameter('dateTo', $dateTo);
+        }
+
+        $qb->setMaxResults($limit);
+        $logs = $qb->getQuery()->getResult();
+
+        $stats = [
+            'total'     => count($logs),
+            'byAction'  => $logRepo->createQueryBuilder('ul')
+                ->select('ul.action, COUNT(ul.id) as count')
+                ->andWhere('ul.action IN (:adminActions)')
+                ->setParameter('adminActions', ['user_update', 'user_suspend', 'user_unsuspend', 'user_delete'])
+                ->groupBy('ul.action')
+                ->orderBy('count', 'DESC')
+                ->getQuery()
+                ->getResult(),
+            'last24h'   => $logRepo->createQueryBuilder('ul')
+                ->select('COUNT(ul.id)')
+                ->andWhere('ul.action IN (:adminActions)')
+                ->andWhere('ul.createdAt >= :yesterday')
+                ->setParameter('adminActions', ['user_update', 'user_suspend', 'user_unsuspend', 'user_delete'])
+                ->setParameter('yesterday', new \DateTime('-24 hours'))
+                ->getQuery()
+                ->getSingleScalarResult(),
+            'last7days' => $logRepo->createQueryBuilder('ul')
+                ->select('COUNT(ul.id)')
+                ->andWhere('ul.action IN (:adminActions)')
+                ->andWhere('ul.createdAt >= :lastWeek')
+                ->setParameter('adminActions', ['user_update', 'user_suspend', 'user_unsuspend', 'user_delete'])
+                ->setParameter('lastWeek', new \DateTime('-7 days'))
+                ->getQuery()
+                ->getSingleScalarResult(),
+        ];
+
+        $allUsers = $logRepo->createQueryBuilder('ul')
+            ->select('DISTINCT u.id, u.email, u.firstname, u.lastname')
+            ->leftJoin('ul.user', 'u')
+            ->andWhere('ul.action IN (:adminActions)')
+            ->setParameter('adminActions', ['user_update', 'user_suspend', 'user_unsuspend', 'user_delete'])
+            ->orderBy('u.email', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('admin/user/audit.html.twig', [
+            'logs'     => $logs,
+            'stats'    => $stats,
+            'allUsers' => $allUsers,
+            'filters'  => [
+                'action'    => $action,
+                'user_id'   => $userId,
+                'date_from' => $dateFrom,
+                'date_to'   => $dateTo,
+                'limit'     => $limit,
+            ],
         ]);
     }
 
