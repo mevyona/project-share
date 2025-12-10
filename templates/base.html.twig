@@ -13,7 +13,7 @@
 			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrapicons.css">
 		{% endblock %}
 	</head>
-	<body>
+	<body {% if is_granted('IS_AUTHENTICATED_FULLY') %} data-authenticated="true" {% endif %}>
 		<nav class="navbar navbar-expand-lg bg-light" data-bs-theme="light">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="{{path('app_accueil')}}">Navbar</a>
@@ -80,4 +80,5 @@
 </html></nav>{% block body %}Share{% endblock %}{% block javascripts %}
 {{ encore_entry_script_tags('app') }}
 {{ encore_entry_script_tags('notifications') }}
+{{ encore_entry_script_tags('session-activity') }}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>{% endblock %}</body></html>
