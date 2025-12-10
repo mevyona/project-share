@@ -1,0 +1,47 @@
+<div class="notifications-panel">
+	<div class="notifications-header">
+		<h3>Notifications</h3>
+		<span class="notifications-count">{{ unreadCount }}</span>
+		{% if unreadCount > 0 %}
+			<button type="button" class="btn-mark-all-read" data-action="mark-all-read">
+				Tout marquer comme lu
+			</button>
+		{% endif %}
+	</div>
+
+	<div class="notifications-list">
+		{% if notifications is empty %}
+			<div class="notifications-empty">
+				<p>Aucune notification</p>
+			</div>
+		{% else %}
+			{% for notification in notifications %}
+				<div class="notification-item {{ notification.typeClass }} {% if not notification.isRead %}notification-unread{% endif %}" data-notification-id="{{ notification.id }}">
+					<div class="notification-icon">
+						<span class="icon">{{ notification.icon }}</span>
+					</div>
+					<div class="notification-content">
+						<div class="notification-header">
+							<h4 class="notification-title">{{ notification.title }}</h4>
+							<span class="notification-time">{{ notification.createdAt|date('d/m/Y H:i') }}</span>
+						</div>
+						<p class="notification-message">{{ notification.message }}</p>
+						{% if notification.link %}
+							<a href="{{ notification.link }}" class="notification-link">Voir plus</a>
+						{% endif %}
+					</div>
+					<div class="notification-actions">
+						{% if not notification.isRead %}
+							<button type="button" class="btn-mark-read" data-action="mark-read" title="Marquer comme lu">
+								✓
+							</button>
+						{% endif %}
+						<button type="button" class="btn-delete" data-action="delete" title="Supprimer">
+							✕
+						</button>
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+</div>
