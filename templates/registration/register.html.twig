@@ -1,31 +1,63 @@
 {% extends 'base.html.twig' %}
+
 {% block title %}
-	{{parent()}}
-	Inscription
+	{{ parent() }}
+	- Inscription
 {% endblock %}
+
 {% block body %}
 	<div class="container-fluid">
 		<h1 class="text-center text-primary mt-4 pt-4 display-1 fw-bold">Inscription</h1>
-	</h1>
-	<div class="row justify-content-center">
-		<div class="col-12 col-md-6 bg-white p-4 m-0 text-primary">
-			{{ form_errors(registrationForm) }}
-			{{ form_start(registrationForm) }}
-            {{ form_row(registrationForm.firstname) }}
-            {{ form_row(registrationForm.lastname) }}
-            {{ form_row(registrationForm.adresse) }}
-            {{ form_row(registrationForm.ville) }}
-            {{ form_row(registrationForm.code_postal) }}
-			{{ form_row(registrationForm.email) }}
-			{{ form_row(registrationForm.plainPassword, {
-label: 'Password'
-}) }}
-			{{ form_row(registrationForm.agreeTerms) }}
-			<div class="text-center">
-				<button class="btn btn-lg btn-primary mt-2" type="submit">
-					S'inscrire</button>
+
+		<div class="row justify-content-center">
+			<div class="col-12 col-md-6 bg-white p-4 m-0 text-primary">
+
+				{{ form_errors(registrationForm) }}
+				{{ form_start(registrationForm) }}
+
+				{{ form_row(registrationForm.firstname,      { attr: {'id': 'firstname'} }) }}
+				{{ form_row(registrationForm.lastname,       { attr: {'id': 'lastname'} }) }}
+				{{ form_row(registrationForm.adresse,        { attr: {'id': 'adresse'} }) }}
+				{{ form_row(registrationForm.ville,          { attr: {'id': 'ville'} }) }}
+				{{ form_row(registrationForm.code_postal,    { attr: {'id': 'code_postal'} }) }}
+				{{ form_row(registrationForm.email,          { attr: {'id': 'email'} }) }}
+
+				<div class="mb-3">
+					<label class="form-label required fw-bold text-primary">Password</label>
+
+					<div class="input-group">
+						{{ form_widget(registrationForm.plainPassword, {attr: { class: 'form-control' }}) }}
+
+						<button type="button" id="toggle-password" class="btn btn-outline-secondary">
+							Voir
+						</button>
+					</div>
+
+					{{ form_errors(registrationForm.plainPassword) }}
+
+					<div id="password-strength-wrapper" class="mt-2">
+						<div id="password-strength-bar"></div>
+						<small id="password-strength-text" class="text-muted"></small>
+					</div>
+				</div>
+
+				{{ form_row(registrationForm.agreeTerms, { attr: {'id': 'agreeTerms'} }) }}
+
+				<div class="text-center">
+					<button id="submit-btn" class="btn btn-lg btn-primary mt-2" type="submit">
+						S'inscrire
+					</button>
+				</div>
+
+				{{ form_end(registrationForm) }}
 			</div>
-			{{ form_end(registrationForm) }}
 		</div>
 	</div>
-</div>{% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	{{ encore_entry_script_tags('form-validation') }}
+	{{ encore_entry_script_tags('toggle-password') }}
+	{{ encore_entry_script_tags('password-strength') }}
+{% endblock %}

@@ -24,6 +24,9 @@ Encore
     .addEntry('contact', './assets/js/contact.js')
     .addEntry('notifications', './assets/js/notifications.js')
     .addEntry('session-activity', './assets/js/session-activity.js')
+    .addEntry('form-validation', './assets/js/form-validation.js')
+    .addEntry('toggle-password', './assets/js/toggle-password.js')
+    .addEntry('password-strength', './assets/js/password-strength.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
