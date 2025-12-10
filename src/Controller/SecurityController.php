@@ -80,7 +80,7 @@ class SecurityController extends AbstractController
             if ($hasher->isPasswordValid($user, $newPassword)) {
                 $this->addFlash('error', 'Ce mot de passe est déjà votre mot de passe actuel.');
                 return $this->redirectToRoute('app_change_password');
-            } //tu me fais chier
+            } 
             $history = new \App\Entity\PasswordHistory();
             $history->setUser($user);
             $history->setPassword($user->getPassword());
