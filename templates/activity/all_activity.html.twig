@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activité Globale
+{% endblock %}
+
+{% block body %}
+	<div class="container-fluid mt-4">
+		<div class="row">
+			<div class="col-12">
+				<h1 class="mb-4">Historique d'Activité Global</h1>
+
+				<div class="row mb-4">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-header">
+								<h5 class="mb-0">Statistiques des 30 derniers jours</h5>
+							</div>
+							<div class="card-body">
+								<div class="row">
+									{% for stat in stats %}
+										<div class="col-md-3 col-sm-6 mb-3">
+											<div class="stat-card p-3 border rounded">
+												<h6 class="text-muted mb-1">{{ stat.action|upper }}</h6>
+												<h3 class="mb-0">{{ stat.count }}</h3>
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="card-header">
+						<h5 class="mb-0">Activités récentes</h5>
+					</div>
+					<div class="card-body p-0">
+						{% if activities is empty %}
+							<div class="p-4 text-center text-muted">
+								Aucune activité enregistrée
+							</div>
+						{% else %}
+							<div class="table-responsive">
+								<table class="table table-hover table-striped mb-0">
+									<thead>
+										<tr>
+											<th width="60"></th>
+											<th>Utilisateur</th>
+											<th>Action</th>
+											<th>Détails</th>
+											<th>Date</th>
+											<th>IP</th>
+											<th>Navigateur</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for activity in activities %}
+											<tr>
+												<td class="text-center">
+													<span style="font-size: 1.5rem;">{{ activity.actionIcon }}</span>
+												</td>
+												<td>
+													<strong>{{ activity.user.email }}</strong>
+												</td>
+												<td>
+													<span class="badge bg-primary">{{ activity.actionLabel }}</span>
+												</td>
+												<td>
+													{% if activity.details %}
+														<small>{{ activity.details }}</small>
+													{% else %}
+														<small class="text-muted">-</small>
+													{% endif %}
+												</td>
+												<td>
+													<small>{{ activity.createdAt|date('d/m/Y H:i:s') }}</small>
+												</td>
+												<td>
+													<small class="text-muted">{{ activity.ipAddress }}</small>
+												</td>
+												<td>
+													{% if activity.userAgent %}
+														<small class="text-muted" title="{{ activity.userAgent }}">
+															{{ activity.userAgent|length > 30 ? activity.userAgent|slice(0, 30) ~ '...' : activity.userAgent }}
+														</small>
+													{% else %}
+														<small class="text-muted">-</small>
+													{% endif %}
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.stat-card {
+			transition: all 0.3s ease;
+		}
+
+		.stat-card:hover {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			transform: translateY(-2px);
+		}
+	</style>
+{% endblock %}

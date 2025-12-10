@@ -1,9 +1,8 @@
 <?php
 namespace App\Security;
 
-use App\Entity\UserLog;
+use App\Service\ActivityLogger;
 use App\Service\NotificationManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +25,7 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
-        private EntityManagerInterface $entityManager,
+        private ActivityLogger $activityLogger,
         private NotificationManager $notificationManager
     ) {
     }
@@ -50,13 +49,8 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $user = $token->getUser();
-        $log  = new UserLog();
-        $log->setUser($user);
-        $log->setAction('login');
-        $log->setIpAddress($request->getClientIp());
 
-        $this->entityManager->persist($log);
-        $this->entityManager->flush();
+        $this->activityLogger->logLogin($user);
 
         $this->notificationManager->notifySuccess(
             $user,
