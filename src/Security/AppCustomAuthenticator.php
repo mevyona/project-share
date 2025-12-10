@@ -2,6 +2,7 @@
 namespace App\Security;
 
 use App\Entity\UserLog;
+use App\Service\NotificationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,8 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private NotificationManager $notificationManager
     ) {
     }
 
@@ -47,7 +49,6 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // Log the successful login
         $user = $token->getUser();
         $log  = new UserLog();
         $log->setUser($user);
@@ -57,11 +58,16 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
         $this->entityManager->persist($log);
         $this->entityManager->flush();
 
+        $this->notificationManager->notifySuccess(
+            $user,
+            'Connexion réussie',
+            'Bienvenue ' . $user->getEmail() . ' ! Vous êtes maintenant connecté.'
+        );
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
-        // For example:
         return new RedirectResponse($this->urlGenerator->generate('app_accueil'));
         throw new \Exception('TODO: provide a valid redirect inside ' . __FILE__);
     }

@@ -105,4 +105,32 @@ class NotificationController extends AbstractController
 
         return new JsonResponse(['success' => true]);
     }
+
+    #[Route('/test', name: 'app_notification_test', methods: ['POST'])]
+    public function test(): JsonResponse
+    {
+        $user = $this->getUser();
+
+        $types = ['success', 'info', 'warning', 'error'];
+        $type  = $types[array_rand($types)];
+
+        $messages = [
+            'success' => ['title' => 'Opération réussie', 'message' => 'Votre action a été exécutée avec succès.'],
+            'info'    => ['title' => 'Information', 'message' => 'Ceci est une notification d\'information pour vous tenir informé.'],
+            'warning' => ['title' => 'Attention', 'message' => 'Veuillez vérifier vos paramètres avant de continuer.'],
+            'error'   => ['title' => 'Erreur détectée', 'message' => 'Une erreur s\'est produite lors de l\'opération.'],
+        ];
+
+        $this->notificationManager->createNotification(
+            $user,
+            $type,
+            $messages[$type]['title'],
+            $messages[$type]['message']
+        );
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Notification de test envoyée',
+        ]);
+    }
 }

@@ -57,7 +57,7 @@ class NotificationSystem {
 
     async loadNotifications() {
         try {
-            const response = await fetch('/notification/list');
+            const response = await fetch('/project-share/notification/list');
             const data = await response.json();
             
             this.updateBadge(data.unreadCount);
@@ -69,7 +69,7 @@ class NotificationSystem {
 
     async updateCount() {
         try {
-            const response = await fetch('/notification/count');
+            const response = await fetch('/project-share/notification/count');
             const data = await response.json();
             this.updateBadge(data.count);
         } catch (error) {
@@ -149,7 +149,7 @@ class NotificationSystem {
 
     async markAsRead(id) {
         try {
-            const response = await fetch(`/notification/${id}/read`, {
+            const response = await fetch(`/project-share/notification/${id}/read`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ class NotificationSystem {
 
     async markAllAsRead() {
         try {
-            const response = await fetch('/notification/read-all', {
+            const response = await fetch('/project-share/notification/read-all', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ class NotificationSystem {
 
     async deleteNotification(id) {
         try {
-            const response = await fetch(`/notification/${id}/delete`, {
+            const response = await fetch(`/project-share/notification/${id}/delete`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -237,5 +237,28 @@ class NotificationSystem {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    new NotificationSystem();
+    const notificationSystem = new NotificationSystem();
+    
+    const testBtn = document.getElementById('testNotificationBtn');
+    if (testBtn) {
+        testBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch('/project-share/notification/test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    setTimeout(() => {
+                        notificationSystem.loadNotifications();
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'envoi de la notification de test:', error);
+            }
+        });
+    }
 });
