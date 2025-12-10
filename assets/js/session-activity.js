@@ -1,7 +1,7 @@
 class SessionActivityChecker {
     constructor() {
-        this.warningTime = 5 * 1000; // 5 secondes
-        this.logoutTime = 10 * 1000; // 10 secondes
+        this.warningTime = 60 * 1000;
+        this.logoutTime = 120 * 1000;
         this.lastActivity = Date.now();
         this.warningShown = false;
         this.checkInterval = null;
