@@ -59,9 +59,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: PasswordHistory::class, mappedBy: 'user')]
     private Collection $passwordHistories;
 
+    /**
+     * @var Collection<int, Fichier>
+     */
+    #[ORM\OneToMany(targetEntity: Fichier::class, mappedBy: 'user')]
+    private Collection $fichiers;
+
     public function __construct()
     {
         $this->passwordHistories = new ArrayCollection();
+        $this->fichiers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -230,6 +237,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($passwordHistory->getUser() === $this) {
                 $passwordHistory->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Fichier>
+     */
+    public function getFichiers(): Collection
+    {
+        return $this->fichiers;
+    }
+
+    public function addFichier(Fichier $fichier): static
+    {
+        if (!$this->fichiers->contains($fichier)) {
+            $this->fichiers->add($fichier);
+            $fichier->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFichier(Fichier $fichier): static
+    {
+        if ($this->fichiers->removeElement($fichier)) {
+            // set the owning side to null (unless already changed)
+            if ($fichier->getUser() === $this) {
+                $fichier->setUser(null);
             }
         }
 

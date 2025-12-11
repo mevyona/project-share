@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes fichiers{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+
+    <h1 class="mb-4 text-primary fw-bold">📁 Mes fichiers</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Fichiers appartenant à mon compte</h5>
+        </div>
+
+        <div class="card-body p-0">
+
+            {% if fichiers is empty %}
+                <div class="p-4 text-center text-muted">
+                    Vous n'avez encore envoyé aucun fichier.
+                </div>
+            {% else %}
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fichier</th>
+                                <th>Extension</th>
+                                <th>Taille</th>
+                                <th>Date d’envoi</th>
+                                <th>Télécharger</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for f in fichiers %}
+                                <tr>
+
+                                    <!-- NOM + ICÔNE + LIEN TÉLÉCHARGER -->
+                                    <td>
+                                        <legend class="m-0 p-0">
+                                            <i class="bi bi-file-earmark-arrow-down text-primary"></i>
+                                            <span class="fw-bold">{{ f.nomOriginal }}</span>
+                                        </legend>
+                                    </td>
+
+                                    <td>{{ f.extension }}</td>
+
+                                    <td>{{ (f.taille / 1024)|number_format(2, '.', ' ') }} Ko</td>
+
+                                    <td>{{ f.dateEnvoi|date('d/m/Y H:i') }}</td>
+
+                                    <td>
+                                        <a href="{{ path('app_telechargement_fichier', {'id': f.id}) }}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Télécharger
+                                        </a>
+                                    </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.08) !important;
+        transition: 0.2s ease;
+    }
+</style>
+
+{% endblock %}
