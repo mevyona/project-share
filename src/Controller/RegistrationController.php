@@ -17,23 +17,34 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_inscription')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager, ActivityLogger $activityLogger): Response
-    {
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $form->get('plainPassword')->getData();        
-            $hashedPassword = $userPasswordHasher->hashPassword($user, $plainPassword);
-            $user->setPassword($hashedPassword);        
-            $entityManager->persist($user);        
-            $history = new PasswordHistory();
-            $history->setUser($user);
-            $history->setPassword($hashedPassword);   
-            $history->setChangedAt(new \DateTimeImmutable());        
-            $entityManager->persist($history);
-            $entityManager->flush();        
-            return $security->login($user, AppCustomAuthenticator::class, 'main');
-        }
+public function register(
+    Request $request,
+    UserPasswordHasherInterface $passwordHasher,
+    Security $security,
+    EntityManagerInterface $em,
+    ActivityLogger $activityLogger
+): Response
+{
+    $user = new User();
+    $form = $this->createForm(RegistrationFormType::class, $user);
+    $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid()) {
+        $plainPassword = $form->get('plainPassword')->getData();
+        $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+        $user->setPassword($hashedPassword);
+        $em->persist($user);
+        $history = new PasswordHistory();
+        $history->setUser($user);
+        $history->setPassword($hashedPassword);
+        $history->setChangedAt(new \DateTimeImmutable());
+        $em->persist($history);
+        $em->flush();
+
+        return $security->login($user, AppCustomAuthenticator::class, 'main');
     }
+    return $this->render('registration/register.html.twig', [
+        'registrationForm' => $form,
+    ]);
+}
+
 }
