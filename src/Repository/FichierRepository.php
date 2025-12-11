@@ -26,6 +26,16 @@ class FichierRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getTotalStorageUsed($user)
+    {
+        return $this->createQueryBuilder('f')
+            ->select('SUM(f.taille)')
+            ->andWhere('f.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     //    /**
     //     * @return Fichier[] Returns an array of Fichier objects
     //     */

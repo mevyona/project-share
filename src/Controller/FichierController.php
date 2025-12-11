@@ -80,9 +80,14 @@ class FichierController extends AbstractController
     public function mesFichiers(FichierRepository $fichierRepository): Response
     {
         $user = $this->getUser();
-        $fichiers = $fichierRepository->findFilesByUser($user);
+        $fichiers = $fichierRepository->findBy(
+            ['user' => $user],
+            ['dateEnvoi' => 'DESC']
+        );
+        $totalUsed = $fichierRepository->getTotalStorageUsed($user);
         return $this->render('fichier/mes-fichiers.html.twig', [
             'fichiers' => $fichiers,
+            'totalUsed' => $totalUsed,
         ]);
     }
 

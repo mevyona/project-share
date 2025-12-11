@@ -33,6 +33,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    public function findUsersWithOldPassword(int $days): array
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.passwordHistories', 'ph')
+            ->groupBy('u.id')
+            ->having('MAX(ph.changedAt) < :limit')
+            ->setParameter('limit', new \DateTime("-$days days"))
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */
