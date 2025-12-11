@@ -19,10 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (/[0-9]/.test(value)) score++;
         if (/[A-Z]/.test(value)) score++;
         if (/[^A-Za-z0-9]/.test(value)) score++;
-
-        // -------------------------
-        // BARRE DE COULEUR
-        // -------------------------
         strengthBar.style.height = "6px";
 
         switch (score) {

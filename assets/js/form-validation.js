@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-    // Sélection des champs du formulaire
     const firstname = document.querySelector("#registration_form_firstname");
     const lastname = document.querySelector("#registration_form_lastname");
     const adresse = document.querySelector("#registration_form_adresse");
@@ -10,17 +8,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.querySelector("#registration_form_plainPassword");
     const agreeTerms = document.querySelector("#registration_form_agreeTerms");
     const submitBtn = document.querySelector("button[type='submit']");
-
-    // On désactive le bouton au chargement
     submitBtn.disabled = true;
     submitBtn.classList.add("disabled");
 
-    // Fonction de validation email
     function isValidEmail(value) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     }
 
-    // Fonction de validation mot de passe
     function isValidPassword(value) {
         return (
             value.length >= 12 &&
@@ -31,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    // Fonction principale : vérifie si tout est ok
     function checkForm() {
         const isComplete =
             firstname.value.trim() !== "" &&
@@ -57,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // On écoute les changements dans CHAQUE champ
     [
         firstname,
         lastname,
