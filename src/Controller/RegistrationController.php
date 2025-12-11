@@ -23,17 +23,17 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $form->get('plainPassword')->getData();
+            $plainPassword = $form->get('plainPassword')->getData();        
+            $hashedPassword = $userPasswordHasher->hashPassword($user, $plainPassword);
+            $user->setPassword($hashedPassword);        
+            $entityManager->persist($user);        
             $history = new PasswordHistory();
             $history->setUser($user);
-            $history->setPassword($hashedPassword);
-            $history->setChangedAt(new \DateTimeImmutable());
+            $history->setPassword($hashedPassword);   
+            $history->setChangedAt(new \DateTimeImmutable());        
             $entityManager->persist($history);
-            $entityManager->flush();
+            $entityManager->flush();        
             return $security->login($user, AppCustomAuthenticator::class, 'main');
         }
-        return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
-        ]);
     }
 }
