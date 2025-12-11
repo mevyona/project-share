@@ -91,4 +91,14 @@ class FichierController extends AbstractController
         ]);
     }
 
+    #[Route('/top-users', name: 'app_top_users')]
+    public function topUsers(FichierRepository $repo): Response
+    {
+        $topUsers = $repo->findTopUsersByFileCount(5); 
+
+        return $this->render('fichier/top-users.html.twig', [
+            'topUsers' => $topUsers,
+        ]);
+    }
+
 }

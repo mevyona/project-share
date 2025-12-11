@@ -28,11 +28,11 @@ class AdminUserController extends AbstractController
     #[Route('/audit', name: 'admin_user_audit')]
     public function audit(Request $request, UserLogRepository $logRepo): Response
     {
-        $action   = $request->query->get('action', '');
-        $userId   = $request->query->get('user_id', '');
+        $action = $request->query->get('action', '');
+        $userId = $request->query->get('user_id', '');
         $dateFrom = $request->query->get('date_from', '');
-        $dateTo   = $request->query->get('date_to', '');
-        $limit    = $request->query->getInt('limit', 100);
+        $dateTo = $request->query->get('date_to', '');
+        $limit = $request->query->getInt('limit', 100);
 
         $qb = $logRepo->createQueryBuilder('ul')
             ->leftJoin('ul.user', 'u')
@@ -67,8 +67,8 @@ class AdminUserController extends AbstractController
         $logs = $qb->getQuery()->getResult();
 
         $stats = [
-            'total'     => count($logs),
-            'byAction'  => $logRepo->createQueryBuilder('ul')
+            'total' => count($logs),
+            'byAction' => $logRepo->createQueryBuilder('ul')
                 ->select('ul.action, COUNT(ul.id) as count')
                 ->andWhere('ul.action IN (:adminActions)')
                 ->setParameter('adminActions', ['user_update', 'user_suspend', 'user_unsuspend', 'user_delete'])
@@ -76,7 +76,7 @@ class AdminUserController extends AbstractController
                 ->orderBy('count', 'DESC')
                 ->getQuery()
                 ->getResult(),
-            'last24h'   => $logRepo->createQueryBuilder('ul')
+            'last24h' => $logRepo->createQueryBuilder('ul')
                 ->select('COUNT(ul.id)')
                 ->andWhere('ul.action IN (:adminActions)')
                 ->andWhere('ul.createdAt >= :yesterday')
@@ -104,15 +104,15 @@ class AdminUserController extends AbstractController
             ->getResult();
 
         return $this->render('admin/user/audit.html.twig', [
-            'logs'     => $logs,
-            'stats'    => $stats,
+            'logs' => $logs,
+            'stats' => $stats,
             'allUsers' => $allUsers,
-            'filters'  => [
-                'action'    => $action,
-                'user_id'   => $userId,
+            'filters' => [
+                'action' => $action,
+                'user_id' => $userId,
                 'date_from' => $dateFrom,
-                'date_to'   => $dateTo,
-                'limit'     => $limit,
+                'date_to' => $dateTo,
+                'limit' => $limit,
             ],
         ]);
     }
@@ -152,7 +152,7 @@ class AdminUserController extends AbstractController
     public function toggleSuspend(User $user, EntityManagerInterface $em, ActivityLogger $activityLogger): Response
     {
         $wasSuspended = $user->isSuspended();
-        $user->setIsSuspended(! $wasSuspended);
+        $user->setIsSuspended(!$wasSuspended);
         $em->flush();
 
         if ($wasSuspended) {
@@ -182,4 +182,17 @@ class AdminUserController extends AbstractController
 
         return $this->redirectToRoute('admin_user_index');
     }
+
+    #[Route('/old-passwords', name: 'app_old_passwords')]
+    public function usersWithOldPasswords(UserRepository $repo): Response
+    {
+        $days = 2; 
+        $users = $repo->findUsersWithOldPassword($days);
+
+        return $this->render('admin/user/old_passwords.html.twig', [
+            'users' => $users,
+            'days' => $days,
+        ]);
+    }
+
 }

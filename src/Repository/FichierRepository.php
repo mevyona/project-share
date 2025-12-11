@@ -36,6 +36,18 @@ class FichierRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function findTopUsersByFileCount(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('f')
+            ->select('u.id, u.firstname, u.lastname, COUNT(f.id) AS fileCount')
+            ->leftJoin('f.user', 'u')
+            ->groupBy('u.id')
+            ->orderBy('fileCount', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Fichier[] Returns an array of Fichier objects
     //     */
