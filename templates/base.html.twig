@@ -7,33 +7,43 @@
 			{% block title %}Share -
 			{% endblock %}
 		</title>
+
 		{% block stylesheets %}
-			{{ encore_entry_link_tags('app') }}
 			<link href="https://bootswatch.com/5/lumen/bootstrap.min.css" rel="stylesheet">
+			{{ encore_entry_link_tags('app') }}
+
 			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrapicons.css">
 		{% endblock %}
 	</head>
+
 	<body {% if is_granted('IS_AUTHENTICATED_FULLY') %} data-authenticated="true" {% endif %}>
+
 		<nav class="navbar navbar-expand-lg bg-light" data-bs-theme="light">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="{{path('app_accueil')}}">Navbar</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bstarget="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" arialabel="Toggle navigation">
+				<a class="navbar-brand" href="{{ path('app_accueil') }}">Navbar</a>
+
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
+
 				<div class="collapse navbar-collapse" id="navbarColor03">
 					<ul class="navbar-nav me-auto">
+
 						<li class="nav-item">
-							<a class="nav-link active" href="{{path('app_accueil')}}">Home
+							<a class="nav-link active" href="{{ path('app_accueil') }}">
+								Home
 								<span class="visually-hidden">(current)</span>
 							</a>
 						</li>
+
 						{% if not is_granted('IS_AUTHENTICATED_FULLY') %}
 							<li class="nav-item">
-								<a class="nav-link" href="{{path('app_login')}}">Connexion</a>
+								<a class="nav-link" href="{{ path('app_login') }}">Connexion</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" href="{{path('app_inscription')}}">Inscription</a>
+								<a class="nav-link" href="{{ path('app_inscription') }}">Inscription</a>
 							</li>
+
 						{% else %}
 							{% if is_granted('ROLE_ADMIN') %}
 								<li class="nav-item">
@@ -46,11 +56,10 @@
 									<a class="nav-link" href="{{ path('app_liste_fichiers') }}">La liste des fichiers</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link" href="{{ path('app_old_passwords') }}">
-										Mots de passe expirés
-									</a>
+									<a class="nav-link" href="{{ path('app_old_passwords') }}">Mots de passe expirés</a>
 								</li>
 							{% endif %}
+
 							<li class="nav-item">
 								<a class="nav-link" href="{{ path('app_my_activity') }}">Mon Activité</a>
 							</li>
@@ -60,39 +69,48 @@
 							<li class="nav-item">
 								<a class="nav-link" href="{{ path('app_mes_fichiers') }}">Mes fichiers</a>
 							</li>
+
 						{% endif %}
+
 						<li class="nav-item">
 							<a class="nav-link" href="#">About</a>
 						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-							<div class="dropdown-menu">
-								<a class="dropdown-item" href="#">Action</a>
-								<a class="dropdown-item" href="#">Another action</a>
-								<a class="dropdown-item" href="#">Something else here</a>
-								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="#">Separated link</a>
-							</div>
-						</li>
-					</li>
-				</ul>
-				<div class="d-flex align-items-center gap-2">
-					{% if app.user %}
-						<button type="button" class="btn btn-outline-primary btn-sm" id="testNotificationBtn">
-							Test Notification
-						</button>
-						{{ include('notification/_bell.html.twig') }}
-						<a class="nav-link" href="{{ path('app_logout') }}">
-							{{ app.user.email }}
-							<i class="bi bi-x-circle-fill"></i>
-						</a>
-					{% endif %}
+
+					</ul>
+
+					<div class="d-flex align-items-center gap-2">
+						{% if app.user %}
+							<button type="button" class="btn btn-outline-primary btn-sm" id="testNotificationBtn">Test Notification</button>
+
+							{{ include('notification/_bell.html.twig') }}
+
+							<button id="dark-mode-toggle" class="btn btn-outline-secondary btn-sm">
+								🌙 Mode sombre
+							</button>
+
+							<a class="nav-link" href="{{ path('app_logout') }}">
+								{{ app.user.email }}
+								<i class="bi bi-x-circle-fill"></i>
+							</a>
+						{% endif %}
+					</div>
+
 				</div>
 			</div>
-		</div>
+		</nav>
+
+		{% block body %}{% endblock %}
+
+		{% block javascripts %}
+			{{ encore_entry_script_tags('app') }}
+			{{ encore_entry_script_tags('notifications') }}
+			{{ encore_entry_script_tags('session-activity') }}
+			{{ encore_entry_script_tags('delete_confirm') }}
+			{{ encore_entry_script_tags('user_quick_search') }}
+			{{ encore_entry_script_tags('dark_mode') }}
+
+			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		{% endblock %}
+
 	</body>
-</html></nav>{% block body %}Share{% endblock %}{% block javascripts %}
-{{ encore_entry_script_tags('app') }}
-{{ encore_entry_script_tags('notifications') }}
-{{ encore_entry_script_tags('session-activity') }}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>{% endblock %}</body></html>
+</html>

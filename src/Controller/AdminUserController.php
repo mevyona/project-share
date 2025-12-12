@@ -18,10 +18,33 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AdminUserController extends AbstractController
 {
     #[Route('/', name: 'admin_user_index')]
-    public function index(UserRepository $repo): Response
+    public function index(Request $request, UserRepository $repo): Response
     {
+        
+        $search = $request->query->get('search');
+        $role = $request->query->get('role');
+        $suspended = $request->query->get('suspended');
+    
+        $page = max(1, (int) $request->query->get('page', 1));
+        $limit = 2;
+        
+        $users = $repo->searchUsersPaginated($search, $role, $suspended, $page, $limit);
+    
+        $totalUsers = $repo->countAllUsers();
+        $activeUsers = $repo->countActiveUsers();
+        $suspendedUsers = $repo->countSuspendedUsers();
+
+        $totalFiltered = $repo->countFilteredUsers($search, $role, $suspended);
+        $totalPages = ceil($totalFiltered / $limit);
+
         return $this->render('admin/user/index.html.twig', [
-            'users' => $repo->findAll(),
+            'users' => $users,
+            'total' => $totalUsers,
+            'active' => $activeUsers,
+            'suspended' => $suspendedUsers,
+
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
         ]);
     }
 

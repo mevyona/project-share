@@ -27,6 +27,11 @@ Encore
     .addEntry('form-validation', './assets/js/form-validation.js')
     .addEntry('toggle-password', './assets/js/toggle-password.js')
     .addEntry('password-strength', './assets/js/password-strength.js')
+    .addEntry('delete_confirm', './assets/js/deleteConfirm.js')
+    .addEntry('user_quick_search', './assets/js/userQuickSearch.js')
+    .addEntry('dark_mode', './assets/js/darkMode.js')
+
+
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

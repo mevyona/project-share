@@ -44,6 +44,163 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
+
+    public function searchUsers(?string $search, ?string $role, ?string $suspended): array
+{
+    $qb = $this->createQueryBuilder('u');
+
+    
+    if (!empty($search)) {
+        $qb->andWhere('u.email LIKE :search 
+                       OR u.firstname LIKE :search
+                       OR u.lastname LIKE :search')
+           ->setParameter('search', '%' . $search . '%');
+    }
+    if (!empty($role)) {
+
+       
+        if ($role === 'ROLE_ADMIN') {
+            $qb->andWhere('u.roles LIKE :admin')
+               ->setParameter('admin', '%"ROLE_ADMIN"%');
+        }
+    
+       
+        if ($role === 'ROLE_USER') {
+            $qb->andWhere('u.roles NOT LIKE :admin')
+               ->setParameter('admin', '%"ROLE_ADMIN"%');
+        }
+    }
+    
+    
+
+   
+    if ($suspended !== null && $suspended !== '') {
+        $qb->andWhere('u.isSuspended = :suspended')
+           ->setParameter('suspended', (bool)$suspended);
+    }
+
+    return $qb->orderBy('u.email', 'ASC')
+              ->getQuery()
+              ->getResult();
+}
+
+public function countAllUsers(): int
+{
+    return $this->createQueryBuilder('u')
+        ->select('COUNT(u.id)')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
+public function countActiveUsers(): int
+{
+    return $this->createQueryBuilder('u')
+        ->select('COUNT(u.id)')
+        ->andWhere('u.isSuspended = 0')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
+public function countSuspendedUsers(): int
+{
+    return $this->createQueryBuilder('u')
+        ->select('COUNT(u.id)')
+        ->andWhere('u.isSuspended = 1')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
+public function findPaginated(int $page, int $limit): array
+{
+    $offset = ($page - 1) * $limit;
+
+    return $this->createQueryBuilder('u')
+        ->setFirstResult($offset)
+        ->setMaxResults($limit)
+        ->orderBy('u.id', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
+
+public function countUsers(): int
+{
+    return (int) $this->createQueryBuilder('u')
+        ->select('COUNT(u.id)')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
+public function searchUsersPaginated(?string $search, ?string $role, ?string $suspended, int $page, int $limit): array
+{
+    $qb = $this->createQueryBuilder('u');
+
+    if (!empty($search)) {
+        $qb->andWhere('u.email LIKE :search 
+                       OR u.firstname LIKE :search
+                       OR u.lastname LIKE :search')
+           ->setParameter('search', '%' . $search . '%');
+    }
+
+    if (!empty($role)) {
+        if ($role === 'ROLE_ADMIN') {
+            $qb->andWhere('u.roles LIKE :admin')
+               ->setParameter('admin', '%"ROLE_ADMIN"%');
+        }
+
+        if ($role === 'ROLE_USER') {
+            $qb->andWhere('u.roles NOT LIKE :admin')
+               ->setParameter('admin', '%"ROLE_ADMIN"%');
+        }
+    }
+
+    if ($suspended !== null && $suspended !== '') {
+        $qb->andWhere('u.isSuspended = :suspended')
+           ->setParameter('suspended', (bool) $suspended);
+    }
+
+    // Pagination
+    $offset = ($page - 1) * $limit;
+
+    return $qb->orderBy('u.email', 'ASC')
+              ->setFirstResult($offset)
+              ->setMaxResults($limit)
+              ->getQuery()
+              ->getResult();
+}
+
+public function countFilteredUsers(?string $search, ?string $role, ?string $suspended): int
+{
+    $qb = $this->createQueryBuilder('u')
+              ->select('COUNT(u.id)');
+
+    if (!empty($search)) {
+        $qb->andWhere('u.email LIKE :search 
+                       OR u.firstname LIKE :search
+                       OR u.lastname LIKE :search')
+           ->setParameter('search', '%' . $search . '%');
+    }
+
+    if (!empty($role)) {
+        if ($role === 'ROLE_ADMIN') {
+            $qb->andWhere('u.roles LIKE :admin')
+               ->setParameter('admin', '%"ROLE_ADMIN"%');
+        }
+
+        if ($role === 'ROLE_USER') {
+            $qb->andWhere('u.roles NOT LIKE :admin')
+               ->setParameter('admin', '%"ROLE_ADMIN"%');
+        }
+    }
+
+    if ($suspended !== null && $suspended !== '') {
+        $qb->andWhere('u.isSuspended = :suspended')
+           ->setParameter('suspended', (bool)$suspended);
+    }
+
+    return (int) $qb->getQuery()->getSingleScalarResult();
+}
+
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */
